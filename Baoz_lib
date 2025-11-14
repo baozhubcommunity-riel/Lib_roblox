@@ -2,6 +2,13 @@
 🔥 VIP UI LIB – Influent + Rayfield + Nexus UI style 🔥
 Made for ScriptshopDEV
 Full Modular & Dynamic
+Features:
+- Rainbow Neon Gradient
+- Dragable Main Frame
+- Tabs + Pages + Toggles + Sliders + Buttons + Keybind
+- Icon ON/OFF + Ripple Effect
+- Open/Close Animation (hides everything when closed)
+- Settings Tab for runtime customization
 --]]
 
 -- =====================
@@ -10,8 +17,8 @@ Full Modular & Dynamic
 local Config = {
     Title = "VIP Hub",
     Subtitle = "Premium UI Library",
-    ThemeColor = Color3.fromRGB(0, 255, 255), -- Neon Cyan default
-    Icon = "rbxassetid://7734068321",
+    ThemeColor = Color3.fromRGB(0, 255, 255), -- default neon cyan
+    Icon = "rbxassetid://7734068321", -- default icon
 }
 
 -- =====================
@@ -21,7 +28,6 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
 local player = Players.LocalPlayer
 
 -- =====================
@@ -41,36 +47,33 @@ main.BackgroundColor3 = Config.ThemeColor
 main.BackgroundTransparency = 0.15
 main.BorderSizePixel = 0
 main.Parent = gui
-
--- Corner & Stroke
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,16)
 local stroke = Instance.new("UIStroke", main)
 stroke.Color = Config.ThemeColor
 stroke.Thickness = 2
 
 -- Topbar
 local topbar = Instance.new("Frame")
-topbar.Size = UDim2.new(1, 0, 0, 50)
+topbar.Size = UDim2.new(1,0,0,50)
 topbar.BackgroundTransparency = 1
 topbar.Parent = main
 
 -- Title
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -60, 0, 26)
-title.Position = UDim2.new(0, 50, 0, 5)
+title.Size = UDim2.new(1,-60,0,26)
+title.Position = UDim2.new(0,50,0,5)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
 title.TextSize = 22
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Text = Config.Title
-title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextColor3 = Color3.new(1,1,1)
 title.Parent = topbar
 
 -- Subtitle
 local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, -60, 0, 16)
-subtitle.Position = UDim2.new(0, 50, 0, 28)
+subtitle.Size = UDim2.new(1,-60,0,16)
+subtitle.Position = UDim2.new(0,50,0,28)
 subtitle.BackgroundTransparency = 1
 subtitle.Font = Enum.Font.Gotham
 subtitle.TextSize = 14
@@ -81,16 +84,16 @@ subtitle.Parent = topbar
 
 -- Icon
 local icon = Instance.new("ImageLabel")
-icon.Size = UDim2.new(0, 38, 0, 38)
-icon.Position = UDim2.new(0, 8, 0, 6)
+icon.Size = UDim2.new(0,38,0,38)
+icon.Position = UDim2.new(0,8,0,6)
 icon.BackgroundTransparency = 1
 icon.Image = Config.Icon
 icon.Parent = topbar
 
 -- Open/Close Button
 local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0, 30, 0, 30)
-toggleBtn.Position = UDim2.new(1, -40, 0, 10)
+toggleBtn.Size = UDim2.new(0,30,0,30)
+toggleBtn.Position = UDim2.new(1,-40,0,10)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
 toggleBtn.Text = "⮟"
 toggleBtn.Font = Enum.Font.GothamBold
@@ -101,8 +104,8 @@ Instance.new("UICorner", toggleBtn)
 
 -- Tabs holder
 local tabs = Instance.new("Frame")
-tabs.Size = UDim2.new(0, 120, 1, -50)
-tabs.Position = UDim2.new(0, 0, 0, 50)
+tabs.Size = UDim2.new(0,120,1,-50)
+tabs.Position = UDim2.new(0,0,0,50)
 tabs.BackgroundTransparency = 1
 tabs.Parent = main
 local listLayout = Instance.new("UIListLayout", tabs)
@@ -110,8 +113,8 @@ listLayout.Padding = UDim.new(0,6)
 
 -- Pages holder
 local pages = Instance.new("Frame")
-pages.Size = UDim2.new(1, -120, 1, -50)
-pages.Position = UDim2.new(0, 120, 0, 50)
+pages.Size = UDim2.new(1,-120,1,-50)
+pages.Position = UDim2.new(0,120,0,50)
 pages.BackgroundTransparency = 1
 pages.Parent = main
 
@@ -122,9 +125,10 @@ local UI = {}
 UI.Tabs = {}
 UI.Pages = {}
 
+-- Add Tab
 function UI:AddTab(name)
     local tabBtn = Instance.new("TextButton")
-    tabBtn.Size = UDim2.new(1, -12, 0, 34)
+    tabBtn.Size = UDim2.new(1,-12,0,34)
     tabBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
     tabBtn.Text = name
     tabBtn.Font = Enum.Font.GothamBold
@@ -132,7 +136,7 @@ function UI:AddTab(name)
     tabBtn.TextColor3 = Color3.fromRGB(255,255,255)
     tabBtn.Parent = tabs
     Instance.new("UICorner", tabBtn)
-    
+
     local page = Instance.new("Frame")
     page.Size = UDim2.new(1,0,1,0)
     page.BackgroundTransparency = 1
@@ -145,23 +149,24 @@ function UI:AddTab(name)
         end
         page.Visible = true
     end)
-    
+
     self.Tabs[name] = tabBtn
     self.Pages[name] = page
     return page
 end
 
-function UI:AddToggle(tabName, text, callback)
+-- Add Toggle with ON/OFF icon
+function UI:AddToggle(tabName,text,callback)
     local parentPage = self.Pages[tabName]
     if not parentPage then warn("Tab does not exist!") return end
-    
+
     local holder = Instance.new("Frame")
-    holder.Size = UDim2.new(1, -20, 0, 40)
+    holder.Size = UDim2.new(1,-20,0,40)
     holder.BackgroundTransparency = 1
     holder.Parent = parentPage
-    
+
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -50,1,0)
+    lbl.Size = UDim2.new(1,-50,1,0)
     lbl.BackgroundTransparency = 1
     lbl.Font = Enum.Font.GothamBold
     lbl.TextSize = 16
@@ -169,12 +174,12 @@ function UI:AddToggle(tabName, text, callback)
     lbl.TextColor3 = Color3.fromRGB(255,255,255)
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = holder
-    
+
     local btn = Instance.new("ImageButton")
     btn.Size = UDim2.new(0,34,0,34)
     btn.Position = UDim2.new(1,-34,0.5,-17)
     btn.BackgroundTransparency = 1
-    btn.Image = "rbxassetid://7733674079"
+    btn.Image = "rbxassetid://7733674079" -- OFF icon
     btn.Parent = holder
 
     local state = false
@@ -185,12 +190,9 @@ function UI:AddToggle(tabName, text, callback)
     end)
 end
 
-function UI:SetTitle(text)
-    title.Text = text
-end
-function UI:SetSubtitle(text)
-    subtitle.Text = text
-end
+-- Change Title/SubTitle/Theme
+function UI:SetTitle(text) title.Text = text end
+function UI:SetSubtitle(text) subtitle.Text = text end
 function UI:SetThemeColor(color)
     main.BackgroundColor3 = color
     stroke.Color = color
@@ -201,32 +203,48 @@ end
 -- =====================
 local dragging, dragStart, startPos
 topbar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    if input.UserInputType==Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
         startPos = main.Position
     end
 end)
 topbar.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    if input.UserInputType==Enum.UserInputType.MouseButton1 then
         dragging = false
     end
 end)
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+    if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
         main.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
     end
 end)
 
--- Toggle Open/Close
+-- =====================
+-- OPEN/CLOSE ANIMATION
+-- =====================
 local opened = true
 toggleBtn.MouseButton1Click:Connect(function()
     opened = not opened
     toggleBtn.Text = opened and "⮟" or "⮝"
+
+    -- Animate main frame size
     TweenService:Create(main,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{
         Size = opened and UDim2.new(0,480,0,350) or UDim2.new(0,480,0,50)
     }):Play()
+
+    -- Show/Hide Tabs & Pages
+    for _, tabBtn in pairs(tabs:GetChildren()) do
+        if tabBtn:IsA("TextButton") then
+            tabBtn.Visible = opened
+        end
+    end
+    for _, page in pairs(pages:GetChildren()) do
+        if page:IsA("Frame") then
+            page.Visible = opened and page.Visible
+        end
+    end
 end)
 
 -- =====================
